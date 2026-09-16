@@ -23,13 +23,17 @@ COLOR_BTN = (60, 60, 80)
 COLOR_BTN_HOVER = (80, 80, 110)
 COLOR_GOLD = (255, 215, 0)
 
+# Путь к папке с ассетами
+ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+
 # Загрузка изображений
 def load_image(name):
-    if not os.path.exists(name):
-        print(f"ОШИБКА: Файл {name} не найден! Скачай картинки и положи их в папку с кодом.")
+    filepath = os.path.join(ASSETS_DIR, name)
+    if not os.path.exists(filepath):
+        print(f"ОШИБКА: Файл {filepath} не найден! Проверьте папку assets/.")
         pygame.quit()
         sys.exit()
-    return pygame.image.load(name).convert_alpha()
+    return pygame.image.load(filepath).convert_alpha()
 
 # Загрузка всех фонов
 bg_entrance = pygame.transform.scale(load_image("bg_cave.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
