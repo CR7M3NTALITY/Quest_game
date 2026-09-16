@@ -7,7 +7,7 @@ BUGGY_MODE = True
 
 # Инициализация Pygame
 pygame.init()
-SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+SCREEN_WIDTH, SCREEN_HEIGHT = 1200, 800
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Подземелье Забытых Багов 2D")
 clock = pygame.time.Clock()
@@ -40,8 +40,8 @@ bg_boss_lair = pygame.transform.scale(load_image("bg_boss_lair.png"), (SCREEN_WI
 bg_treasure = pygame.transform.scale(load_image("bg_treasure.png"), (SCREEN_WIDTH, SCREEN_HEIGHT))
 
 # Загрузка персонажей
-img_skeleton = pygame.transform.scale(load_image("char_skeleton.png"), (150, 250))
-img_merchant = pygame.transform.scale(load_image("char_merchant.png"), (350, 350))
+img_skeleton = pygame.transform.scale(load_image("char_skeleton.png"), (300, 500))
+img_merchant = pygame.transform.scale(load_image("char_merchant.png"), (700, 600))
 
 # Игровые переменные
 hp = 50 if BUGGY_MODE else 100
@@ -188,7 +188,8 @@ def set_location(loc):
         if has_sword:
             current_text = "Торговец усмехается: 'Зачем тебе второй меч, дружище?'"
         elif gold >= 40:
-            gold -= 40
+            if not BUGGY_MODE:
+                gold -= 40
             has_sword = True
             current_text = "Ты купил отличный меч! Теперь ты опасен."
         else:
@@ -197,7 +198,8 @@ def set_location(loc):
 
     elif loc == "buy_potion":
         if gold >= 20:
-            gold -= 20
+            if not BUGGY_MODE:
+                gold -= 20
             heal = 40
             if not BUGGY_MODE:
                 hp = min(hp + heal, max_hp)
@@ -268,13 +270,8 @@ def set_location(loc):
         return
 
     elif loc == "quit":
-        if BUGGY_MODE:
-            # Функциональный баг: кнопка не закрывает игру, а просто возвращает в начало
-            set_location("entrance")
-            return
-        else:
-            pygame.quit()
-            sys.exit()
+        pygame.quit()
+        sys.exit()
 
 # Главный цикл
 running = True
