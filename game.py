@@ -26,6 +26,10 @@ COLOR_GOLD = (255, 215, 0)
 # Путь к папке с ассетами
 ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
+# Переменная для полноэкранного режима
+is_fullscreen = False
+fs_btn_rect = pygame.Rect(SCREEN_WIDTH - 140, 10, 130, 30) # Кнопка в правом верхнем углу
+
 # Загрузка изображений
 def load_image(name):
     filepath = os.path.join(ASSETS_DIR, name)
@@ -98,6 +102,15 @@ def update_ui():
         img_y = SCREEN_HEIGHT - current_image.get_height() - 180
         screen.blit(current_image, (img_x, img_y))
 
+    # Отрисовка кнопки полноэкранного режима в правом верхнем углу
+    mouse_pos = pygame.mouse.get_pos()
+    fs_color = COLOR_BTN_HOVER if fs_btn_rect.collidepoint(mouse_pos) else COLOR_BTN
+    pygame.draw.rect(screen, fs_color, fs_btn_rect, border_radius=5)
+    fs_text = "В окно" if is_fullscreen else "На весь экран"
+    text_surf = font_small.render(fs_text, True, COLOR_TEXT)
+    text_rect = text_surf.get_rect(center=fs_btn_rect.center)
+    screen.blit(text_surf, text_rect)
+
     ui_rect = pygame.Rect(0, SCREEN_HEIGHT - 180, SCREEN_WIDTH, 180)
     pygame.draw.rect(screen, COLOR_UI_BG, ui_rect)
     pygame.draw.line(screen, COLOR_UI_BORDER, (0, ui_rect.top), (SCREEN_WIDTH, ui_rect.top), 3)
@@ -113,7 +126,6 @@ def update_ui():
     btn_width = (SCREEN_WIDTH - 60) // len(buttons) if buttons else 0
     for i, (btn_text, btn_action) in enumerate(buttons):
         btn_rect = pygame.Rect(20 + i * (btn_width + 10), btn_y, btn_width, 50)
-        mouse_pos = pygame.mouse.get_pos()
         color = COLOR_BTN_HOVER if btn_rect.collidepoint(mouse_pos) else COLOR_BTN
         pygame.draw.rect(screen, color, btn_rect, border_radius=8)
         text_surf = font_small.render(btn_text, True, COLOR_TEXT)
@@ -285,7 +297,17 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+            
         if event.type == pygame.MOUSEBUTTONDOWN:
+            # Проверка клика по кнопке полноэкранного режима
+            if fs_btn_rect.collidepoint(event.pos):
+                is_fullscreen = not is_fullscreen
+                if is_fullscreen:
+                    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.FULLSCREEN)
+                else:
+                    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+
+            # Обработка кликов по игровым кнопкам
             for i, (btn_text, btn_action) in enumerate(buttons):
                 btn_width = (SCREEN_WIDTH - 60) // len(buttons) if buttons else 0
                 btn_y = SCREEN_HEIGHT - 180 + 110
