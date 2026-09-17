@@ -1,9 +1,10 @@
 import pygame
 import sys
 import os
+import pyinstaller 
 
 # ПЕРЕКЛЮЧАТЕЛЬ РЕЖИМА: True = с багами (для сдачи), False = идеальная (для себя)
-BUGGY_MODE = True
+BUGGY_MODE = True 
 
 # Инициализация Pygame
 pygame.init()
