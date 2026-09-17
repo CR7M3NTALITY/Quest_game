@@ -1,0 +1,49 @@
+name: Build and Release Windows Executable
+
+on:
+  push:
+    tags:
+      - 'v*'  # Запускается автоматически при создании тега (например, v1.0)
+  workflow_dispatch:  # Позволяет запустить вручную, если нужно
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pygame pyinstaller
+        
+    - name: Build with PyInstaller
+      run: |
+        pyinstaller --noconsole --name "DungeonOfBugs" game.py
+        
+    - name: Copy assets to dist
+      run: |
+        Copy-Item -Path "assets" -Destination "dist/DungeonOfBugs/assets" -Recurse
+        
+    - name: Zip the build folder
+      run: |
+        # Архивируем папку, чтобы скачивался один удобный ZIP-файл
+        Compress-Archive -Path dist\DungeonOfBugs\* -DestinationPath DungeonOfBugs-Windows.zip
+        
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: DungeonOfBugs-Windows.zip
+        name: Release ${{ github.ref_name }}
+        body: "Автоматическая сборка Windows-версии игры для тестирования методом черного ящика."
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
