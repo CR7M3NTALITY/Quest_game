@@ -1,9 +1,10 @@
-name: Build Windows Executable
+name: Build and Release Windows Executable
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    tags:
+      - 'v*'  # Запускается автоматически при создании тега (например, v1.0)
+  workflow_dispatch:  # Позволяет запустить вручную, если нужно
 
 jobs:
   build-windows:
@@ -31,8 +32,16 @@ jobs:
       run: |
         Copy-Item -Path "assets" -Destination "dist/DungeonOfBugs/assets" -Recurse
         
-    - name: Upload Windows Executable
-      uses: actions/upload-artifact@v4  
+    - name: Zip the build folder
+      run: |
+        # Архивируем папку, чтобы скачивался один удобный ZIP-файл
+        Compress-Archive -Path dist\DungeonOfBugs\* -DestinationPath DungeonOfBugs-Windows.zip
+        
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
       with:
-        name: DungeonOfBugs-Windows
-        path: dist/DungeonOfBugs/
+        files: DungeonOfBugs-Windows.zip
+        name: Release ${{ github.ref_name }}
+        body: "Автоматическая сборка Windows-версии игры для тестирования методом черного ящика."
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
