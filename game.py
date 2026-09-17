@@ -24,7 +24,12 @@ COLOR_BTN_HOVER = (80, 80, 110)
 COLOR_GOLD = (255, 215, 0)
 
 # Путь к папке с ассетами
-ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
+if getattr(sys, 'frozen', False):
+    # Если игра запущена как .exe файл
+    ASSETS_DIR = os.path.join(os.path.dirname(sys.executable), "assets")
+else:
+    # Если игра запущена через python game.py
+    ASSETS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets")
 
 # Переменная для полноэкранного режима
 is_fullscreen = False
